@@ -26,8 +26,10 @@
 
 /* kservice optimization */
 
-#define RT_KSERVICE_USING_STDLIB
-#define RT_KPRINTF_USING_LONGLONG
+
+/* klibc optimization */
+
+#define RT_KLIBC_USING_PRINTF_LONGLONG
 #define RT_USING_DEBUG
 #define RT_DEBUGING_COLOR
 #define RT_DEBUGING_CONTEXT
@@ -58,7 +60,7 @@
 #define RT_USING_CONSOLE
 #define RT_CONSOLEBUF_SIZE 256
 #define RT_CONSOLE_DEVICE_NAME "uart0"
-#define RT_VER_NUM 0x50100
+#define RT_VER_NUM 0x50200
 #define RT_USING_STDC_ATOMIC
 #define RT_BACKTRACE_LEVEL_MAX_NR 32
 
@@ -154,6 +156,10 @@
 #define RT_USING_VIRTIO_INPUT
 #define RT_USING_OFW
 #define RT_FDT_EARLYCON_MSG_SIZE 128
+#define RT_USING_PIC
+#define MAX_HANDLERS 288
+#define RT_PIC_ARM_GIC
+#define RT_PIC_ARM_GIC_MAX_NR 1
 #define RT_USING_PIN
 #define RT_USING_KTIME
 #define RT_USING_CLK
@@ -205,9 +211,6 @@
 #define RT_USING_ADT_BITMAP
 #define RT_USING_ADT_HASHMAP
 #define RT_USING_ADT_REF
-
-/* RT-Thread Utestcases */
-
 
 /* RT-Thread online packages */
 
@@ -272,18 +275,13 @@
 
 /* peripheral libraries and drivers */
 
-/* HAL & SDK Drivers */
-
-/* STM32 HAL & SDK Drivers */
-
-
-/* Kendryte SDK */
-
-
 /* sensors drivers */
 
 
 /* touch drivers */
+
+
+/* Kendryte SDK */
 
 
 /* AI packages */

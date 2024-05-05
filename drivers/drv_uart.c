@@ -14,6 +14,9 @@
 
 #include "board.h"
 #include "mmu.h"
+#include <drivers/platform.h>
+#include <drivers/pic.h>
+#include <drivers/ofw.h>
 
 struct hw_uart_device
 {
@@ -144,3 +147,49 @@ int rt_hw_uart_init(void)
 
     return 0;
 }
+
+static rt_err_t uart_probe(struct rt_platform_device *pdev)
+{
+    struct hw_uart_device *uart;
+    struct serial_configure config = RT_SERIAL_CONFIG_DEFAULT;
+
+#ifdef RT_USING_UART0
+    _uart0_device.hw_base = (rt_size_t)rt_ioremap((void*)_uart0_device.hw_base, PL011_UART0_SIZE);
+    uart = &_uart0_device;
+
+    _serial0.ops    = &_uart_ops;
+    _serial0.config = config;
+
+    /* register UART1 device */
+    rt_hw_serial_register(&_serial0, "uart0",
+                          RT_DEVICE_FLAG_RDWR | RT_DEVICE_FLAG_INT_RX,
+                          uart);
+
+    uart->irqno = rt_ofw_get_irq(pdev->parent.ofw_node, 0);
+    rt_hw_interrupt_install(uart->irqno, rt_hw_uart_isr, &_serial0, "uart0");
+    /* enable Rx and Tx of UART */
+    UART_CR(uart->hw_base) = (1 << 0) | (1 << 8) | (1 << 9);
+#endif
+}
+
+static const struct rt_ofw_node_id uart_ofw_ids[] =
+{
+    { .compatible = "arm,pl011" },
+    { /* sentinel */ }
+};
+
+static struct rt_platform_driver uart_driver =
+{
+    .name = "arm-pl011",
+    .ids = uart_ofw_ids,
+
+    .probe = uart_probe,
+};
+
+static int uart_drv_register(void)
+{
+    rt_platform_driver_register(&uart_driver);
+
+    return 0;
+}
+INIT_FRAMEWORK_EXPORT(uart_drv_register);

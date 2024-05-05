@@ -299,6 +299,44 @@ static void rt_hw_gpio_isr(int irqno, void *param)
 #endif
 }
 
+#ifdef RT_USING_PIC
+static rt_err_t gpio_probe(struct rt_platform_device *pdev)
+{
+#ifdef RT_USING_SMP
+    rt_spin_lock_init(&_pl061.spinlock);
+#endif
+
+    pl061_gpio_base = (rt_size_t)rt_ioremap((void *)pl061_gpio_base, PL061_GPIO_SIZE);
+
+    rt_device_pin_register("gpio", &ops, RT_NULL);
+    int irqno = rt_ofw_get_irq(pdev->parent.ofw_node, 0);
+
+    rt_hw_interrupt_install(irqno, rt_hw_gpio_isr, RT_NULL, "gpio");
+    rt_hw_interrupt_umask(irqno);
+}
+
+static const struct rt_ofw_node_id gpio_ofw_ids[] =
+{
+    { .compatible = "arm,pl061" },
+    { /* sentinel */ }
+};
+
+static struct rt_platform_driver gpio_driver =
+{
+    .name = "arm-pl061",
+    .ids = gpio_ofw_ids,
+
+    .probe = gpio_probe,
+};
+
+static int gpio_drv_register(void)
+{
+    rt_platform_driver_register(&gpio_driver);
+
+    return 0;
+}
+INIT_FRAMEWORK_EXPORT(gpio_drv_register);
+#else
 int rt_hw_gpio_init(void)
 {
 #ifdef RT_USING_SMP
@@ -314,5 +352,5 @@ int rt_hw_gpio_init(void)
     return 0;
 }
 INIT_DEVICE_EXPORT(rt_hw_gpio_init);
-
+#endif /* RT_USING_PIC */
 #endif /* BSP_USING_PIN */
