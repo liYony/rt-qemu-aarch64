@@ -45,3 +45,4 @@ if PLATFORM == 'gcc':
 
 DUMP_ACTION = OBJDUMP + ' -D -S $TARGET > rtt.asm\n'
 POST_ACTION = OBJCPY + ' -O binary $TARGET rtthread.bin\n' + SIZE + ' $TARGET \n'
+POST_ACTION += 'dtc -I dts -O dtb cortex-a57.dts -o cortex-a57.dtb\n'
