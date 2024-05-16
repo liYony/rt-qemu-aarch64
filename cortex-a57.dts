@@ -305,8 +305,10 @@
 		compatible = "arm,pl031\0arm,primecell";
 	};
 
-	pl011@9000000 {
+	pl011:pl011@9000000 {
 		clock-names = "uartclk\0apb_pclk";
+		pinctrl-names = "default";
+        pinctrl-0 = <&pinctrl_hog_2>;
 		clocks = <0x8000 0x8000>;
 		interrupts = <0x00 0x01 0x04>;
 		reg = <0x00 0x9000000 0x00 0x1000>;
@@ -379,6 +381,35 @@
 		interrupts = <0x01 0x0d 0xf04 0x01 0x0e 0xf04 0x01 0x0b 0xf04 0x01 0x0a 0xf04>;
 		always-on;
 		compatible = "arm,armv8-timer\0arm,armv7-timer";
+	};
+
+	iomuxc_snvs: iomuxc-snvs@02290000 {
+		pinctrl-names = "default_snvs";
+        pinctrl-0 = <&pinctrl_hog_2>;
+		compatible = "fsl,imx6ull-iomuxc-snvs";
+		reg = <0x02290000 0x10000>;
+		imx6ul-evk {
+		pinctrl_hog_2: hoggrp-2 {
+                        fsl,pins = <
+                                0x0008 0x004C 0x0000 0x5 0x0      0x80000000
+                        >;
+                };
+
+		pinctrl_dvfs: dvfsgrp {
+                        fsl,pins = <
+                                0x0014 0x0058 0x0000 0x5 0x0      0x79
+                        >;
+                };
+
+		pinctrl_spi4: spi4grp {
+                        fsl,pins = <
+                                0x0018 0x005C 0x0000 0x5 0x0        0x70a1
+                                0x001C 0x005C 0x0000 0x5 0x0        0x70a1
+                                0x0020 0x005C 0x0000 0x5 0x0        0x70a1
+                                0x0024 0x005C 0x0000 0x5 0x0        0x80000000
+                        >;
+                };
+        };
 	};
 
 	apb-pclk {
